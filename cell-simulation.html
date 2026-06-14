@@ -3,44 +3,30 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>محاكاة الخلايا العصبية — Neuron Simulation</title>
+<title>محاكاة واقعية للخلايا العصبية — Realistic Neuron Simulation</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Tahoma, sans-serif;
     color: #E8E8F0;
-    background: #0B0B14;
+    background: #07070d;
     line-height: 1.7;
     overflow-x: hidden;
   }
   header {
     background: linear-gradient(135deg, #534AB7 0%, #8A4DA0 50%, #D85A30 100%);
-    color: #fff;
-    padding: 32px 24px 36px;
-    text-align: center;
+    color: #fff; padding: 30px 24px 34px; text-align: center;
   }
-  header h1 { font-size: 30px; font-weight: 900; letter-spacing: -0.5px; }
-  header .sub { margin-top: 8px; font-size: 15px; opacity: 0.92; }
+  header h1 { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; }
+  header .sub { margin-top: 8px; font-size: 14.5px; opacity: 0.92; }
 
-  .wrap { max-width: 960px; margin: 0 auto; padding: 20px 16px 60px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 18px 14px 60px; }
 
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin: 18px 0;
-  }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 16px 0; }
   .controls button {
-    background: #16162a;
-    border: 2px solid #534AB7;
-    color: #C9C5F0;
-    padding: 10px 18px;
-    border-radius: 24px;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all .18s ease;
+    background: #14141f; border: 2px solid #534AB7; color: #C9C5F0;
+    padding: 10px 18px; border-radius: 24px; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: all .18s ease;
   }
   .controls button:hover { background: #534AB7; color: #fff; transform: translateY(-2px); }
   .controls button.danger { border-color: #D85A30; color: #f0a98a; }
@@ -49,81 +35,70 @@
   .controls button.heal:hover { background: #2faf6f; color: #fff; }
 
   .canvas-box {
-    position: relative;
-    border-radius: 18px;
-    overflow: hidden;
-    border: 1px solid #23233f;
-    box-shadow: 0 12px 40px rgba(0,0,0,.5);
-    background: radial-gradient(circle at 50% 40%, #14142a 0%, #0B0B14 80%);
+    position: relative; border-radius: 18px; overflow: hidden;
+    border: 1px solid #1d1d33; box-shadow: 0 12px 40px rgba(0,0,0,.55);
+    background: radial-gradient(circle at 40% 30%, #121226 0%, #07070d 80%);
   }
   canvas { display: block; width: 100%; height: auto; }
 
   .status {
-    text-align: center;
-    margin-top: 14px;
-    font-size: 15px;
-    min-height: 24px;
-    font-weight: 600;
-    color: #C9C5F0;
+    text-align: center; margin-top: 14px; font-size: 15px; min-height: 24px;
+    font-weight: 600; color: #C9C5F0;
   }
 
   .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    justify-content: center;
-    margin-top: 18px;
-    font-size: 13px;
-    color: #9a9ab8;
+    display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+    margin-top: 16px; font-size: 12.5px; color: #9a9ab8;
   }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
 
   .info {
-    margin-top: 28px;
-    background: #11111f;
-    border: 1px solid #23233f;
-    border-radius: 14px;
-    padding: 20px 22px;
+    margin-top: 26px; background: #0f0f1c; border: 1px solid #1d1d33;
+    border-radius: 14px; padding: 20px 22px;
   }
   .info h2 { font-size: 18px; color: #fff; margin-bottom: 10px; }
-  .info p { font-size: 14.5px; color: #b6b6cf; margin-bottom: 10px; }
+  .info p { font-size: 14px; color: #b6b6cf; margin-bottom: 9px; }
   .info b { color: #C9A8F0; }
 </style>
 </head>
 <body>
 <header>
-  <h1>🧠 محاكاة الخلايا العصبية</h1>
-  <div class="sub">شوف شلون تنتقل الإشارة العصبية، وكيف يصير الشلل، وكيف الخلايا الجذعية تصلّح الضرر</div>
+  <h1>🧠 محاكاة واقعية للخلايا العصبية</h1>
+  <div class="sub">جهد فعل حقيقي • توصيل قفزي عبر عُقد رانفييه • مشبك كيميائي • انقباض عضلي</div>
 </header>
 
 <div class="wrap">
   <div class="controls">
-    <button id="btnSignal">⚡ أرسل إشارة عصبية</button>
-    <button id="btnInjure" class="danger">✂️ اقطع العصب (شلل)</button>
+    <button id="btnSignal">⚡ أطلق جهد فعل (إشارة)</button>
+    <button id="btnInjure" class="danger">✂️ اقطع المحور (شلل)</button>
     <button id="btnHeal" class="heal">🌱 خلايا جذعية تصلّح</button>
     <button id="btnReset">🔄 إعادة</button>
   </div>
 
   <div class="canvas-box">
-    <canvas id="c" width="900" height="500"></canvas>
+    <canvas id="c" width="1000" height="560"></canvas>
   </div>
 
-  <div class="status" id="status">اضغط «أرسل إشارة عصبية» لتبدأ المحاكاة 👆</div>
+  <div class="status" id="status">اضغط «أطلق جهد فعل» حتى تبدأ المحاكاة 👆</div>
 
   <div class="legend">
-    <span><i class="dot" style="background:#5bd1ff"></i> جسم الخلية (Soma)</span>
-    <span><i class="dot" style="background:#ffd45b"></i> الإشارة الكهربائية</span>
-    <span><i class="dot" style="background:#D85A30"></i> موضع القطع / الإصابة</span>
-    <span><i class="dot" style="background:#2faf6f"></i> خلية جذعية تصلّح</span>
+    <span><i class="dot" style="background:#6fd0ff"></i> غشاء في الراحة (−70mV)</span>
+    <span><i class="dot" style="background:#ffd23f"></i> إزالة استقطاب (+30mV)</span>
+    <span><i class="dot" style="background:#cfd8e6"></i> غمد الميالين</span>
+    <span><i class="dot" style="background:#ff8a5b"></i> ناقل عصبي (مشبك)</span>
+    <span><i class="dot" style="background:#D85A30"></i> موضع القطع</span>
+    <span><i class="dot" style="background:#2faf6f"></i> خلية جذعية</span>
   </div>
 
   <div class="info">
-    <h2>شنو تشوف بالمحاكاة؟</h2>
-    <p>🧠 <b>الإشارة العصبية:</b> الدماغ يرسل نبضة كهربائية تنتقل من خلية لخلية عبر المحاور (axons) حتى توصل للعضلة فتتحرك.</p>
-    <p>✂️ <b>الشلل:</b> لمن ينقطع العصب أو يموت جزء منه، الإشارة ما تكدر تكمّل طريقها — العضلة ما توصلها الأوامر = شلل.</p>
-    <p>🌱 <b>الخلايا الجذعية:</b> تجارب علمية حديثة تستخدم خلايا جذعية لتنمو وتعيد ربط الجسر المقطوع، فترجع الإشارة تمر مرة ثانية.</p>
-    <p style="font-size:13px;color:#7a7a98;margin-top:14px">⚠️ محاكاة تعليمية مبسّطة لأغراض التوضيح فقط — وليست تمثيلاً طبياً دقيقاً.</p>
+    <h2>شنو الواقعي بهالمحاكاة؟</h2>
+    <p>⚡ <b>جهد الفعل:</b> الغشاء يكون بالراحة عند ‎−70mV‎ (أزرق). لمن تنطلق الإشارة يصير «إزالة استقطاب» لـ ‎+30mV‎ (أصفر) ثم يرجع يستقطب — موجة كهربائية حقيقية تمشي على المحور.</p>
+    <p>🔁 <b>التوصيل القفزي:</b> غمد الميالين يعزل المحور، فجهد الفعل «يقفز» بين <b>عُقد رانفييه</b> بدل ما يمشي تدريجياً — هذا اللي يخلي الإشارة سريعة جداً بالأعصاب الحقيقية.</p>
+    <p>🧪 <b>المشبك العصبي:</b> لمن توصل الإشارة لنهاية المحور، تنفجر حويصلات تطلق <b>نواقل عصبية</b> تعبر الشق المشبكي حتى تنبّه الخلية التالية.</p>
+    <p>💪 <b>العضلة:</b> توصل الإشارة للألياف العضلية فتنقبض فعلياً (تقصر وتنتفخ).</p>
+    <p>✂️🌱 <b>الإصابة والتصليح:</b> قطع المحور يحجب الموجة = شلل. الخلايا الجذعية تنمو وتعيد بناء المحور والميالين فترجع الإشارة تمر.</p>
+    <p style="font-size:12.5px;color:#7a7a98;margin-top:12px">⚠️ محاكاة تعليمية مبسّطة — الفيزيولوجيا الحقيقية أعقد، بس الأفكار الأساسية مطابقة للواقع.</p>
   </div>
 </div>
 
@@ -132,252 +107,374 @@ const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 const statusEl = document.getElementById('status');
+const setStatus = t => statusEl.textContent = t;
 
-// ---- شبكة الخلايا العصبية: سلسلة من الدماغ إلى العضلة ----
-const N = 6;
-let neurons = [];
-function buildNeurons() {
+// ============================================================
+//  بناء سلسلة من 3 خلايا عصبية -> عضلة
+//  كل خلية: جسم (soma) + نواة + تفرعات شجيرية + محور بعُقد رانفييه
+// ============================================================
+let neurons, muscle;
+
+function build() {
+  const cy = H * 0.42;
   neurons = [];
-  const startX = 90, endX = W - 90, y = H / 2;
-  for (let i = 0; i < N; i++) {
-    const t = i / (N - 1);
+  const somaXs = [120, 430, 740];
+  for (let i = 0; i < somaXs.length; i++) {
+    const sx = somaXs[i], sy = cy + (i % 2 ? 26 : -18);
+    const axonStart = sx + 24;
+    const axonEnd = (i < 2 ? somaXs[i + 1] - 30 : 900);
+    // بناء عُقد رانفييه على طول المحور
+    const segLen = 46;
+    const nodes = [];
+    let x = axonStart;
+    const wob = (i === 1 ? 18 : 10);
+    while (x < axonEnd) {
+      nodes.push({ x, y: sy + Math.sin(x * 0.05) * wob });
+      x += segLen;
+    }
+    nodes.push({ x: axonEnd, y: sy + Math.sin(axonEnd * 0.05) * wob });
     neurons.push({
-      x: startX + (endX - startX) * t,
-      y: y + Math.sin(t * Math.PI * 2) * 70,
-      r: 22,
-      pulse: 0
+      x: sx, y: sy, r: 26,
+      dendrites: makeDendrites(sx, sy, 26, i),
+      axon: nodes,
+      membrane: nodes.map(() => -70), // فولتية كل عقدة
+      cut: -1,            // مؤشر عقدة القطع (-1 سليم)
+      healP: 1            // نسبة سلامة الجزء المقطوع
     });
   }
+  muscle = { x: 905, y: cy + 30, contract: 0, fibers: 7 };
 }
-buildNeurons();
 
-let cutIndex = -1;          // أي وصلة مقطوعة (-1 يعني سليم)
-let healing = false;        // جاري التصليح
-let healProgress = 0;       // 0..1
-let stemCells = [];         // جزيئات الخلايا الجذعية
-let signals = [];           // الإشارات المتحركة
-let particles = [];         // ومضات بصرية
+function makeDendrites(x, y, r, seed) {
+  const arr = [];
+  const count = 5;
+  for (let k = 0; k < count; k++) {
+    const ang = Math.PI * 0.5 + (k - count / 2) * 0.5 + (seed * 0.3);
+    const len = 34 + (k % 2) * 14;
+    arr.push({
+      ang, len,
+      branch: (Math.random() * 0.4 + 0.3),
+      bAng: (Math.random() - 0.5) * 0.8
+    });
+  }
+  return arr;
+}
+build();
+
+// ============================================================
+//  حالة المحاكاة
+// ============================================================
+let aps = [];          // أمواج جهد الفعل النشطة { ni, pos } pos = مسافة بالنقاط
+let vesicles = [];     // نواقل عصبية بالمشابك
+let stemCells = [];
+let healingNeuron = -1;
+let particles = [];
 
 function reset() {
-  cutIndex = -1; healing = false; healProgress = 0;
-  stemCells = []; signals = []; particles = [];
-  buildNeurons();
-  setStatus('تمت الإعادة. الشبكة العصبية سليمة ✅');
-}
-function setStatus(t){ statusEl.textContent = t; }
-
-// ---- إرسال إشارة عصبية ----
-function sendSignal() {
-  if (signals.length) return;
-  signals.push({ seg: 0, t: 0, blocked: false });
-  setStatus('⚡ الإشارة انطلقت من الدماغ...');
+  build();
+  aps = []; vesicles = []; stemCells = []; particles = [];
+  healingNeuron = -1;
+  setStatus('تمت الإعادة. العصب سليم تماماً ✅');
 }
 
-// ---- قطع العصب ----
+// إطلاق جهد فعل من أول خلية
+function fire(ni = 0) {
+  if (ni === 0 && aps.some(a => a.ni === 0)) return;
+  aps.push({ ni, pos: 0, vmax: neurons[ni].axon.length - 1 });
+  if (ni === 0) setStatus('⚡ انطلق جهد الفعل من جسم الخلية الأولى...');
+}
+
+// قطع المحور بخلية وسطية
 function injure() {
-  if (healing) return;
-  cutIndex = 2 + Math.floor(Math.random() * 2); // اقطع وصلة بالوسط
-  const a = neurons[cutIndex], b = neurons[cutIndex + 1];
-  const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-  for (let i = 0; i < 24; i++) {
-    particles.push({
-      x: mx, y: my,
-      vx: (Math.random() - .5) * 4,
-      vy: (Math.random() - .5) * 4,
-      life: 1, color: '#D85A30'
-    });
-  }
-  setStatus('✂️ انقطع العصب! الإشارة ما رح تكمّل — هذا هو الشلل.');
+  const n = neurons[1];
+  if (n.cut >= 0 && n.healP < 1) return;
+  n.cut = Math.floor(n.axon.length * 0.5);
+  n.healP = 0;
+  const p = n.axon[n.cut];
+  for (let k = 0; k < 26; k++)
+    particles.push({ x: p.x, y: p.y, vx:(Math.random()-.5)*4, vy:(Math.random()-.5)*4, life:1, c:'#D85A30' });
+  setStatus('✂️ انقطع المحور! الموجة رح تنحجب عند القطع — هذا هو الشلل.');
 }
 
-// ---- التصليح بالخلايا الجذعية ----
 function heal() {
-  if (cutIndex < 0) { setStatus('العصب سليم أصلاً — اقطعه أول حتى تشوف التصليح 🙂'); return; }
-  if (healing) return;
-  healing = true; healProgress = 0; stemCells = [];
-  const a = neurons[cutIndex], b = neurons[cutIndex + 1];
-  for (let i = 0; i < 30; i++) {
+  const n = neurons[1];
+  if (n.cut < 0) { setStatus('المحور سليم — اقطعه أول حتى تشوف التصليح 🙂'); return; }
+  if (healingNeuron === 1) return;
+  healingNeuron = 1; stemCells = [];
+  const p = n.axon[n.cut];
+  for (let k = 0; k < 26; k++) {
     stemCells.push({
-      x: a.x + (b.x - a.x) * Math.random(),
-      y: a.y + (b.y - a.y) * Math.random() + (Math.random() - .5) * 120,
-      tx: 0, ty: 0, r: 3 + Math.random() * 3
+      x: p.x + (Math.random()-.5)*160, y: p.y + (Math.random()-.5)*150,
+      r: 3 + Math.random()*3, tx: p.x, ty: p.y, settled: 0
     });
   }
-  setStatus('🌱 الخلايا الجذعية بدت تنمو وتعيد ربط العصب...');
+  setStatus('🌱 الخلايا الجذعية بدت تهاجر وتعيد بناء المحور والميالين...');
 }
 
-// ---- الرسم ----
-function drawConnection(a, b, i) {
-  const cut = (i === cutIndex);
-  ctx.lineWidth = 6;
-  if (cut && healProgress < 1) {
-    // جزء مقطوع: ارسم الطرفين مع فجوة
-    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-    const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
-    grad.addColorStop(0, '#3a3a66'); grad.addColorStop(1, '#3a3a66');
-    ctx.strokeStyle = grad;
-    const gap = 0.18 * (1 - healProgress);
-    // طرف أول
-    ctx.beginPath(); ctx.moveTo(a.x, a.y);
-    ctx.lineTo(a.x + (mx - a.x) * (1 - gap), a.y + (my - a.y) * (1 - gap)); ctx.stroke();
-    // طرف ثاني
-    ctx.beginPath(); ctx.moveTo(b.x, b.y);
-    ctx.lineTo(b.x + (mx - b.x) * (1 - gap), b.y + (my - b.y) * (1 - gap)); ctx.stroke();
-    // جسر التصليح الأخضر
-    if (healProgress > 0) {
-      ctx.strokeStyle = `rgba(47,175,111,${0.9})`;
-      ctx.lineWidth = 6 * healProgress;
-      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-    }
-    // علامة القطع
-    if (healProgress < 0.6) {
-      ctx.fillStyle = '#D85A30';
-      ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI * 2); ctx.fill();
-    }
-  } else {
-    ctx.strokeStyle = '#4a4a8a';
-    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-  }
-}
-
-function drawNeuron(n) {
-  // هالة النبض
-  if (n.pulse > 0) {
-    ctx.beginPath();
-    ctx.arc(n.x, n.y, n.r + 18 * n.pulse, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255,212,91,${0.25 * n.pulse})`;
-    ctx.fill();
-  }
-  // جسم الخلية
-  const g = ctx.createRadialGradient(n.x - 6, n.y - 6, 2, n.x, n.y, n.r);
-  g.addColorStop(0, '#bfeaff');
-  g.addColorStop(1, n.pulse > 0 ? '#ffd45b' : '#5bd1ff');
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
-  // زوائد شجيرية بسيطة
-  ctx.strokeStyle = '#5bd1ff'; ctx.lineWidth = 2;
-  for (let k = 0; k < 5; k++) {
-    const ang = (k / 5) * Math.PI * 2 + 0.4;
-    ctx.beginPath();
-    ctx.moveTo(n.x + Math.cos(ang) * n.r, n.y + Math.sin(ang) * n.r);
-    ctx.lineTo(n.x + Math.cos(ang) * (n.r + 12), n.y + Math.sin(ang) * (n.r + 12));
-    ctx.stroke();
-  }
-}
-
-function label(text, x, y) {
-  ctx.fillStyle = '#8a8ab0'; ctx.font = '600 14px sans-serif';
-  ctx.textAlign = 'center'; ctx.fillText(text, x, y);
-}
-
+// ============================================================
+//  التحديث
+// ============================================================
 function update() {
-  // حركة الإشارة
-  for (let i = signals.length - 1; i >= 0; i--) {
-    const s = signals[i];
-    s.t += 0.022;
-    if (s.t >= 1) {
-      neurons[s.seg + 1].pulse = 1;
-      // هل الوصلة القادمة مقطوعة؟
-      if (s.seg === cutIndex && healProgress < 1) {
-        // الإشارة محجوبة
-        const a = neurons[s.seg], b = neurons[s.seg + 1];
-        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-        for (let k = 0; k < 14; k++)
-          particles.push({ x: mx, y: my, vx:(Math.random()-.5)*3, vy:(Math.random()-.5)*3, life:1, color:'#D85A30' });
-        setStatus('🚫 الإشارة وصلت للقطع وانحجبت — العضلة ما تتحرك (شلل).');
-        signals.splice(i, 1);
-        continue;
-      }
-      s.seg++; s.t = 0;
-      if (s.seg >= N - 1) {
-        signals.splice(i, 1);
-        setStatus('✅ الإشارة وصلت للعضلة — تتحرك بنجاح!');
-        // ومضة عند العضلة
-        const last = neurons[N - 1];
-        for (let k = 0; k < 20; k++)
-          particles.push({ x: last.x, y: last.y, vx:(Math.random()-.5)*5, vy:(Math.random()-.5)*5, life:1, color:'#ffd45b' });
-      }
+  // أمواج جهد الفعل
+  for (let i = aps.length - 1; i >= 0; i--) {
+    const ap = aps[i];
+    const n = neurons[ap.ni];
+    ap.pos += 0.16;                       // سرعة التوصيل القفزي
+    const idx = Math.floor(ap.pos);
+
+    // إزالة استقطاب العقدة الحالية + شرارة
+    if (idx < n.membrane.length && n.membrane[idx] < 0) {
+      n.membrane[idx] = 30;
+      const nd = n.axon[idx];
+      for (let k = 0; k < 3; k++)
+        particles.push({ x: nd.x, y: nd.y, vx:(Math.random()-.5)*2.5, vy:(Math.random()-.5)*2.5, life:.7, c:'#ffd23f' });
+    }
+
+    // هل وصلنا موضع القطع؟
+    if (n.cut >= 0 && n.healP < 1 && idx >= n.cut) {
+      const p = n.axon[n.cut];
+      for (let k = 0; k < 10; k++)
+        particles.push({ x:p.x, y:p.y, vx:(Math.random()-.5)*3, vy:(Math.random()-.5)*3, life:1, c:'#D85A30' });
+      setStatus('🚫 الموجة وصلت للقطع وانحجبت — ما توصل للعضلة (شلل).');
+      aps.splice(i, 1);
+      continue;
+    }
+
+    // وصلت نهاية المحور
+    if (ap.pos >= ap.vmax) {
+      aps.splice(i, 1);
+      releaseSynapse(ap.ni);
     }
   }
 
-  // خفوت النبض
-  neurons.forEach(n => { if (n.pulse > 0) n.pulse -= 0.03; });
+  // استعادة الاستقطاب تدريجياً (يرجع للراحة)
+  neurons.forEach(n => {
+    for (let j = 0; j < n.membrane.length; j++)
+      if (n.membrane[j] > -70) n.membrane[j] -= 3.5;
+  });
 
-  // تصليم بالخلايا الجذعية
-  if (healing && healProgress < 1) {
-    const a = neurons[cutIndex], b = neurons[cutIndex + 1];
-    // اسحب الخلايا الجذعية نحو خط الوصلة لتشكّل الجسر
-    stemCells.forEach((sc, idx) => {
-      const tt = idx / stemCells.length;
-      const tx = a.x + (b.x - a.x) * tt;
-      const ty = a.y + (b.y - a.y) * tt;
-      sc.x += (tx - sc.x) * 0.06;
-      sc.y += (ty - sc.y) * 0.06;
+  // النواقل العصبية بالمشبك
+  for (let i = vesicles.length - 1; i >= 0; i--) {
+    const v = vesicles[i];
+    v.x += v.vx; v.y += v.vy; v.life -= 0.018;
+    if (v.life <= 0) vesicles.splice(i, 1);
+  }
+
+  // انقباض العضلة يخفت
+  if (muscle.contract > 0) muscle.contract -= 0.012;
+
+  // الخلايا الجذعية تهاجر وتصلّح
+  if (healingNeuron >= 0) {
+    const n = neurons[healingNeuron];
+    let allSettled = true;
+    stemCells.forEach(sc => {
+      sc.x += (sc.tx - sc.x) * 0.05;
+      sc.y += (sc.ty - sc.y) * 0.05;
+      if (Math.hypot(sc.tx - sc.x, sc.ty - sc.y) < 8) sc.settled = Math.min(1, sc.settled + 0.02);
+      else allSettled = false;
     });
-    healProgress += 0.006;
-    if (healProgress >= 1) {
-      healProgress = 1; healing = false; cutIndex = -1; stemCells = [];
-      setStatus('🎉 تم تصليح العصب! جرّب ترسل إشارة الحين — رح تمر.');
+    n.healP = Math.min(1, n.healP + 0.006);
+    if (n.healP >= 1) {
+      n.cut = -1; healingNeuron = -1; stemCells = [];
+      setStatus('🎉 تم تصليح المحور والميالين! أطلق جهد فعل الحين — رح يمر.');
     }
   }
 
-  // الجزيئات
+  // جزيئات
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
-    p.x += p.vx; p.y += p.vy; p.life -= 0.02;
+    p.x += p.vx; p.y += p.vy; p.life -= 0.022;
     if (p.life <= 0) particles.splice(i, 1);
   }
+}
+
+// إطلاق المشبك ثم تنبيه الخلية التالية / العضلة
+function releaseSynapse(ni) {
+  const n = neurons[ni];
+  const end = n.axon[n.axon.length - 1];
+  const target = (ni < neurons.length - 1) ? neurons[ni + 1] : muscle;
+  for (let k = 0; k < 16; k++) {
+    const a = Math.atan2(target.y - end.y, target.x - end.x) + (Math.random()-.5)*0.7;
+    const sp = 1.4 + Math.random()*1.2;
+    vesicles.push({ x: end.x, y: end.y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, life: 1 });
+  }
+  if (ni < neurons.length - 1) {
+    setStatus('🧪 المشبك أطلق نواقل عصبية → نبّه الخلية التالية.');
+    setTimeout(() => fire(ni + 1), 380);
+  } else {
+    setStatus('✅ الإشارة وصلت للعضلة — انقبضت بنجاح!');
+    muscle.contract = 1;
+  }
+}
+
+// ============================================================
+//  الرسم
+// ============================================================
+function vColor(v) {
+  // من −70mV (أزرق) إلى +30mV (أصفر/برتقالي)
+  const t = Math.max(0, Math.min(1, (v + 70) / 100));
+  const r = Math.round(111 + t * (255 - 111));
+  const g = Math.round(208 + t * (210 - 208));
+  const b = Math.round(255 + t * (63 - 255));
+  return `rgb(${r},${g},${b})`;
+}
+
+function drawDendrites(n) {
+  ctx.lineCap = 'round';
+  n.dendrites.forEach(d => {
+    const x1 = n.x + Math.cos(d.ang) * n.r;
+    const y1 = n.y + Math.sin(d.ang) * n.r;
+    const x2 = x1 + Math.cos(d.ang) * d.len;
+    const y2 = y1 + Math.sin(d.ang) * d.len;
+    ctx.strokeStyle = '#4aa8d8'; ctx.lineWidth = 3.2;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    // تفرّع صغير
+    const bx = x1 + (x2 - x1) * d.branch, by = y1 + (y2 - y1) * d.branch;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(bx, by);
+    ctx.lineTo(bx + Math.cos(d.ang + d.bAng) * 16, by + Math.sin(d.ang + d.bAng) * 16);
+    ctx.stroke();
+  });
+}
+
+function drawAxon(n) {
+  const ax = n.axon;
+  ctx.lineCap = 'round';
+  for (let j = 0; j < ax.length - 1; j++) {
+    const a = ax[j], b = ax[j + 1];
+    const isCutSeg = (n.cut >= 0 && j === n.cut && n.healP < 1);
+
+    // المحور الأساسي (تحت الميالين) بلون الفولتية
+    ctx.strokeStyle = vColor((n.membrane[j] + n.membrane[j+1]) / 2);
+    ctx.lineWidth = 4;
+    if (isCutSeg) {
+      // فجوة القطع: ارسم طرفين + جسر التصليح الأخضر
+      const mx = (a.x+b.x)/2, my=(a.y+b.y)/2, gap = 0.42*(1-n.healP);
+      ctx.strokeStyle = '#3a3a55';
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(a.x+(mx-a.x)*(1-gap), a.y+(my-a.y)*(1-gap)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(b.x,b.y); ctx.lineTo(b.x+(mx-b.x)*(1-gap), b.y+(my-b.y)*(1-gap)); ctx.stroke();
+      if (n.healP > 0) {
+        ctx.strokeStyle = `rgba(47,175,111,${0.85})`; ctx.lineWidth = 4*n.healP;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      } else {
+        ctx.fillStyle = '#D85A30';
+        ctx.beginPath(); ctx.arc(mx,my,5,0,Math.PI*2); ctx.fill();
+      }
+      continue;
+    }
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+
+    // غمد الميالين (كبسولة بيضاء فوق المقطع، تترك عُقد رانفييه مكشوفة)
+    const myelinHealthy = !(n.cut >= 0 && Math.abs(j - n.cut) <= 0 && n.healP < 1);
+    if (myelinHealthy) {
+      const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy);
+      const ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
+      const pad = 7;                          // فجوة العقدة
+      const x1 = a.x + ux * pad, y1 = a.y + uy * pad;
+      const x2 = b.x - ux * pad, y2 = b.y - uy * pad;
+      const wM = 9 * (j === n.cut ? n.healP : 1);
+      const g = ctx.createLinearGradient(x1+nx*wM, y1+ny*wM, x1-nx*wM, y1-ny*wM);
+      g.addColorStop(0, '#e9eef6'); g.addColorStop(0.5, '#cfd8e6'); g.addColorStop(1, '#a9b6c8');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(x1+nx*wM, y1+ny*wM); ctx.lineTo(x2+nx*wM, y2+ny*wM);
+      ctx.lineTo(x2-nx*wM, y2-ny*wM); ctx.lineTo(x1-nx*wM, y1-ny*wM);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(120,135,160,.5)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo((x1+x2)/2+nx*wM,(y1+y2)/2+ny*wM); ctx.lineTo((x1+x2)/2-nx*wM,(y1+y2)/2-ny*wM); ctx.stroke();
+    }
+  }
+
+  // عُقد رانفييه (نقاط مكشوفة) + توهج عند إزالة الاستقطاب
+  ax.forEach((nd, j) => {
+    const v = n.membrane[j];
+    if (v > -60) {
+      const t = (v + 70) / 100;
+      ctx.fillStyle = `rgba(255,210,63,${0.5 * t})`;
+      ctx.beginPath(); ctx.arc(nd.x, nd.y, 12 * t + 4, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.fillStyle = vColor(v);
+    ctx.beginPath(); ctx.arc(nd.x, nd.y, 3.2, 0, Math.PI*2); ctx.fill();
+  });
+}
+
+function drawSoma(n) {
+  const fired = n.membrane[0] > -60;
+  const g = ctx.createRadialGradient(n.x-8, n.y-8, 3, n.x, n.y, n.r);
+  g.addColorStop(0, fired ? '#fff0b0' : '#bfeaff');
+  g.addColorStop(1, fired ? '#ffd23f' : '#5bbce8');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI*2); ctx.fill();
+  // النواة
+  ctx.fillStyle = 'rgba(40,70,110,.55)';
+  ctx.beginPath(); ctx.arc(n.x+3, n.y+2, n.r*0.42, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(20,40,70,.7)';
+  ctx.beginPath(); ctx.arc(n.x+5, n.y+3, n.r*0.16, 0, Math.PI*2); ctx.fill();
+}
+
+function drawMuscle() {
+  const m = muscle, c = Math.max(0, m.contract);
+  const baseLen = 70, len = baseLen * (1 - c * 0.32);
+  const x0 = m.x;
+  for (let f = 0; f < m.fibers; f++) {
+    const fy = m.y - 42 + f * 13;
+    const th = 4.5 + c * 4;
+    // لون الليف يحمر عند الانقباض
+    ctx.strokeStyle = `rgb(${190+c*40},${70-c*20},${80-c*20})`;
+    ctx.lineWidth = th; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x0, fy); ctx.lineTo(x0 + len, fy); ctx.stroke();
+    // خطوط القسيمات العضلية (sarcomeres)
+    ctx.strokeStyle = `rgba(255,255,255,${0.25 + c*0.25})`; ctx.lineWidth = 1;
+    const bands = 6, gap = len / bands;
+    for (let bI = 1; bI < bands; bI++) {
+      ctx.beginPath(); ctx.moveTo(x0 + gap*bI, fy - th/2); ctx.lineTo(x0 + gap*bI, fy + th/2); ctx.stroke();
+    }
+  }
+  ctx.fillStyle = '#8a8ab0'; ctx.font = '600 13px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(c > 0.15 ? '💪 العضلة تنقبض' : '💪 العضلة', x0 + 35, m.y - 56);
 }
 
 function render() {
   ctx.clearRect(0, 0, W, H);
 
-  // عناوين
-  label('🧠 الدماغ', neurons[0].x, neurons[0].y - 45);
-  label('💪 العضلة', neurons[N - 1].x, neurons[N - 1].y - 45);
+  ctx.fillStyle = '#8a8ab0'; ctx.font = '600 13px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('🧠 من الدماغ', neurons[0].x, neurons[0].y - 58);
 
-  // الوصلات
-  for (let i = 0; i < N - 1; i++) drawConnection(neurons[i], neurons[i + 1], i);
+  // محاور أولاً (خلف الأجسام)
+  neurons.forEach(drawAxon);
+  neurons.forEach(drawDendrites);
+  neurons.forEach(drawSoma);
+  drawMuscle();
 
-  // الخلايا الجذعية
+  // نواقل عصبية
+  vesicles.forEach(v => {
+    ctx.globalAlpha = Math.max(0, v.life);
+    ctx.fillStyle = '#ff8a5b';
+    ctx.beginPath(); ctx.arc(v.x, v.y, 3.4, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+
+  // خلايا جذعية
   stemCells.forEach(sc => {
+    ctx.fillStyle = 'rgba(47,175,111,.28)';
+    ctx.beginPath(); ctx.arc(sc.x, sc.y, sc.r + 4, 0, Math.PI*2); ctx.fill();
     ctx.fillStyle = '#2faf6f';
-    ctx.beginPath(); ctx.arc(sc.x, sc.y, sc.r, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = 'rgba(47,175,111,.3)';
-    ctx.beginPath(); ctx.arc(sc.x, sc.y, sc.r + 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(sc.x, sc.y, sc.r, 0, Math.PI*2); ctx.fill();
   });
 
-  // الإشارة المتحركة
-  signals.forEach(s => {
-    const a = neurons[s.seg], b = neurons[s.seg + 1];
-    const x = a.x + (b.x - a.x) * s.t;
-    const y = a.y + (b.y - a.y) * s.t;
-    ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2);
-    ctx.fillStyle = '#ffd45b'; ctx.fill();
-    ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,212,91,.3)'; ctx.fill();
-  });
-
-  // الخلايا
-  neurons.forEach(drawNeuron);
-
-  // الجزيئات
+  // جزيئات
   particles.forEach(p => {
-    ctx.globalAlpha = Math.max(p.life, 0);
-    ctx.fillStyle = p.color;
-    ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.c;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 2.6, 0, Math.PI*2); ctx.fill();
     ctx.globalAlpha = 1;
   });
 }
 
-function loop() {
-  update();
-  render();
-  requestAnimationFrame(loop);
-}
+function loop() { update(); render(); requestAnimationFrame(loop); }
 loop();
 
-document.getElementById('btnSignal').onclick = sendSignal;
+document.getElementById('btnSignal').onclick = () => fire(0);
 document.getElementById('btnInjure').onclick = injure;
 document.getElementById('btnHeal').onclick = heal;
 document.getElementById('btnReset').onclick = reset;
