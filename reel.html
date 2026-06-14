@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Reel — GIF</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%;
+    background: #000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Tajawal, Tahoma, sans-serif;
+    color: #fff;
+    overflow: hidden;
+  }
+  body { display: flex; align-items: center; justify-content: center; }
+
+  .phone {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    height: 100vh;
+    max-height: 920px;
+    background: #000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== status bar ===== */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px 6px;
+    font-size: 15px;
+    font-weight: 600;
+    direction: ltr;
+  }
+  .status-bar .right { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+
+  /* ===== media (GIF) ===== */
+  .stage {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .gif {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #111;
+  }
+
+  /* ===== right action rail ===== */
+  .rail {
+    position: absolute;
+    bottom: 150px;
+    inset-inline-end: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    z-index: 5;
+  }
+  .rail .item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .rail button {
+    background: none; border: none; color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s ease;
+  }
+  .rail button:active { transform: scale(.85); }
+  .rail .count { font-size: 12px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+  .rail svg { width: 30px; height: 30px; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
+  .heart.liked svg { fill: #ff2d55; stroke: #ff2d55; }
+
+  /* ===== save button (highlighted) ===== */
+  .save-btn {
+    background: linear-gradient(135deg, #534AB7 0%, #8A4DA0 50%, #D85A30 100%) !important;
+    width: 52px; height: 52px; border-radius: 16px !important;
+    box-shadow: 0 6px 18px rgba(216,90,48,.45);
+  }
+  .save-btn.saved { background: #1db954 !important; box-shadow: 0 6px 18px rgba(29,185,84,.45); }
+  .save-btn svg { width: 26px; height: 26px; }
+
+  /* ===== bottom meta ===== */
+  .meta {
+    position: absolute;
+    bottom: 78px;
+    inset-inline-start: 0;
+    inset-inline-end: 80px;
+    padding: 0 16px;
+    z-index: 4;
+    direction: ltr;
+    text-align: left;
+  }
+  .user-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,.4); background:#333; }
+  .username { font-weight: 700; font-size: 15px; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+  .follow {
+    margin-inline-start: 4px;
+    background: transparent; color: #fff;
+    border: 1px solid rgba(255,255,255,.6);
+    padding: 4px 14px; border-radius: 8px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .music { display: flex; align-items: center; gap: 6px; font-size: 13px; opacity: .95; margin-bottom: 8px; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+  .caption { font-size: 14px; line-height: 1.4; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+
+  /* ===== bottom nav ===== */
+  .nav {
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 12px 8px 18px;
+    background: #000;
+    border-top: 1px solid #1a1a1a;
+  }
+  .nav button { background:none; border:none; color:#fff; cursor:pointer; opacity:.85; }
+  .nav button.active { opacity: 1; }
+  .nav svg { width: 26px; height: 26px; }
+
+  /* ===== toast ===== */
+  .toast {
+    position: absolute;
+    bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: rgba(20,20,25,.95);
+    color:#fff; padding: 12px 20px; border-radius: 12px;
+    font-size: 14px; font-weight: 600;
+    opacity: 0; pointer-events: none;
+    transition: all .25s ease; z-index: 20;
+    direction: rtl;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="status-bar">
+    <span class="time">01:09</span>
+    <span class="right">
+      <span>5G</span>
+      <span>&#9737;</span>
+    </span>
+  </div>
+
+  <div class="stage">
+    <!-- الـ GIF: غيّر الرابط من المتغير GIF_URL في الأسفل -->
+    <img id="gif" class="gif" alt="GIF" />
+
+    <div class="rail">
+      <div class="item">
+        <button class="heart" id="likeBtn" aria-label="إعجاب">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+        <span class="count" id="likeCount">1M</span>
+      </div>
+      <div class="item">
+        <button aria-label="تعليق">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </button>
+        <span class="count">850</span>
+      </div>
+      <div class="item">
+        <button aria-label="إعادة نشر">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        </button>
+        <span class="count">149K</span>
+      </div>
+      <div class="item">
+        <button aria-label="إرسال">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+        <span class="count">340K</span>
+      </div>
+
+      <!-- زر الحفظ -->
+      <div class="item">
+        <button class="save-btn" id="saveBtn" aria-label="حفظ الـ GIF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+        <span class="count">حفظ</span>
+      </div>
+    </div>
+
+    <div class="meta">
+      <div class="user-row">
+        <span class="avatar"></span>
+        <span class="username">softcatmemes</span>
+        <button class="follow">Follow</button>
+      </div>
+      <div class="music">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3" fill="none" stroke="#fff" stroke-width="2"/><circle cx="18" cy="16" r="3" fill="none" stroke="#fff" stroke-width="2"/></svg>
+        <span>leverfall · Waiting</span>
+      </div>
+      <div class="caption">why are there so many of them</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="active" aria-label="الرئيسية"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></button>
+    <button aria-label="ريلز"><svg viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+    <button aria-label="استكشاف"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="3 3 21 12 12 14 10 21 3 3"/></svg></button>
+    <button aria-label="بحث"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+    <button aria-label="الحساب"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg></button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+  // ====== غيّر هذا الرابط لأي GIF تبيه ======
+  const GIF_URL = "https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif";
+  // =========================================
+
+  const gifEl = document.getElementById('gif');
+  gifEl.src = GIF_URL;
+
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  // إعجاب
+  const likeBtn = document.getElementById('likeBtn');
+  likeBtn.addEventListener('click', () => likeBtn.classList.toggle('liked'));
+
+  // حفظ الـ GIF
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.addEventListener('click', async () => {
+    showToast('جارٍ الحفظ…');
+    const fileName = 'double-up-' + Date.now() + '.gif';
+    try {
+      const res = await fetch(GIF_URL, { mode: 'cors' });
+      if (!res.ok) throw new Error('fetch failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      triggerDownload(url, fileName);
+      URL.revokeObjectURL(url);
+      saveBtn.classList.add('saved');
+      showToast('تم حفظ الـ GIF ✓');
+    } catch (e) {
+      // احتياطي: لو منع CORS التنزيل المباشر، نفتح الرابط للحفظ اليدوي
+      try {
+        triggerDownload(GIF_URL, fileName);
+        showToast('تم فتح الـ GIF — اضغط مطوّلاً للحفظ');
+      } catch (_) {
+        window.open(GIF_URL, '_blank');
+        showToast('افتح الصورة واحفظها يدوياً');
+      }
+    }
+  });
+
+  function triggerDownload(href, name) {
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = name;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+</script>
+
+</body>
+</html>
